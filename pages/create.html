@@ -1,0 +1,76 @@
+<section class="wrap pad-sm split">
+  <div>
+    <p class="kicker">Create</p>
+    <h1>Turn your idea into a real game</h1>
+    <p class="lead">In the Creator Studio you design the game and make the decisions. AI is your helper: it suggests, explains and builds in small steps. <b>You're the creator.</b></p>
+    <div class="btn-row"><a class="btn btn-orange" href="#prompt-builder">Try the Prompt Builder</a><a class="btn btn-ghost" href="/build-your-own">How it's built</a></div>
+  </div>
+  <img src="/img/create.webp" alt="A child building a snake game with friendly robot helpers" width="1200" height="670">
+</section>
+
+<section class="wrap pad-sm">
+  <h2>How creating works</h2>
+  <div class="flow">
+    <div style="background:#0F6E66">1. Idea<small>What's your game?</small></div>
+    <div style="background:#5B47D6">2. Brief<small>Pip asks questions</small></div>
+    <div style="background:#B4540F">3. Prompts<small>Clear, small steps</small></div>
+    <div style="background:#172B45">4. Build<small>See it in a safe preview</small></div>
+    <div style="background:#0F6E66">5. Test<small>Find and fix bugs</small></div>
+    <div style="background:#5B47D6">6. Check<small>The Creator's Check</small></div>
+    <div style="background:#B4540F">7. Share<small>With permission</small></div>
+  </div>
+  <div class="grid g3">
+    <div class="card"><h3>Pip asks before it answers</h3><p>Instead of making the whole game for you, Pip asks "What should happen when…?" and "What do you think this will do?" Thinking first makes you a better creator.</p></div>
+    <div class="card"><h3>Small steps you understand</h3><p>AI adds one feature at a time and explains it. Every AI-written line is highlighted, so you always know which parts you need to understand.</p></div>
+    <div class="card"><h3>Everything is saved as versions</h3><p>Every save is a version you can go back to. Break something? Roll back. That's how real developers work.</p></div>
+  </div>
+</section>
+
+<section id="prompt-builder" class="band-white">
+  <div class="wrap pad">
+    <div class="split" style="align-items:start">
+      <div>
+        <p class="kicker">Try it now · Demo</p>
+        <h2>The Prompt Builder</h2>
+        <p>A prompt is the instruction you give an AI. Write one below and the checker will tell you what's good, what's missing and <b>why</b>. Every check shows its reasoning, so a grown-up can review it if needed.</p>
+        <form id="prompt-form">
+          <div class="field">
+            <label for="prompt">Your prompt</label>
+            <textarea id="prompt" name="prompt" maxlength="2000" placeholder="e.g. I'm making a game where a hedgehog collects apples..."></textarea>
+            <span class="hint">Don't include your name, school or address. Nothing here is sent to an AI in this demo.</span>
+          </div>
+          <div class="btn-row"><button class="btn btn-orange" type="submit">Check my prompt</button></div>
+        </form>
+        <p class="small" style="margin-top:16px">Or try an example:</p>
+        <div class="btn-row">
+          <button class="btn btn-ghost btn-sm" type="button" data-example="make me a game">Vague prompt</button>
+          <button class="btn btn-ghost btn-sm" type="button" data-example="I'm making a game where a hedgehog collects apples. Add a jump when I press space, about 2 hedgehogs high, and only if it's on the ground. It should feel bouncy, like a trampoline. Keep the code simple and explain each part to me.">Strong prompt</button>
+        </div>
+      </div>
+      <div>
+        <div id="prompt-report" class="report" hidden aria-live="polite"></div>
+        <div class="card mint" id="prompt-tips">
+          <h3>Five ingredients of a great prompt</h3>
+          <ol>
+            <li><b>Goal:</b> what you want done</li>
+            <li><b>Context:</b> what you're making and what already works</li>
+            <li><b>Details and rules:</b> numbers, keys, what happens if…</li>
+            <li><b>Example:</b> "like a trampoline", "like snake"</li>
+            <li><b>Ask to understand:</b> "explain each part to me"</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap pad split">
+  <img src="/img/pip_laptop.webp" alt="Pip the robot at a laptop" width="600" height="454">
+  <div>
+    <h2>The Creator Studio <span class="tag">coming next</span></h2>
+    <p>The full studio will have a chat with Pip, a code view with AI-written lines highlighted, a safe preview on phone and desktop sizes, automatic checks, a test plan and version history.</p>
+    <p>Older or more confident creators can switch to a more technical view and even export their project to GitHub and host it themselves.</p>
+    <a class="btn btn-teal" href="/build-your-own">See the tools behind it</a>
+  </div>
+</section>
+<script src="/js/checks.js" defer></script>

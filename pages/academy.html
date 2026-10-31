@@ -1,0 +1,87 @@
+<section class="wrap pad-sm">
+  <p class="kicker">Master</p>
+  <h1>The PlayTinker Academy</h1>
+  <p class="lead">Seven levels, each one a real stage in how software is made. You level up by <b>showing what you understand</b>, not by clicking more or asking the AI more questions. Open to every age.</p>
+</section>
+
+<section class="wrap pad-sm">
+  <div class="levels">
+    <div class="level"><div class="hex" style="background:#E0701C">1</div><h3>Idea Explorer</h3><p>Ask questions, explore ideas, write a brief</p><span class="badge" style="color:#B4540F">Curious Mind</span></div>
+    <div class="level"><div class="hex" style="background:#6E5AE6">2</div><h3>Prompt Builder</h3><p>Context, rules, examples, improving prompts</p><span class="badge" style="color:#5B47D6">Word Wizard</span></div>
+    <div class="level"><div class="hex" style="background:#11857C">3</div><h3>Game Maker</h3><p>Mechanics, HTML, CSS, JavaScript, prototypes</p><span class="badge" style="color:#0F6E66">First Creation</span></div>
+    <div class="level"><div class="hex" style="background:#3A6EA5">4</div><h3>Bug Detective</h3><p>Reproduce, read errors, fix, re-test</p><span class="badge" style="color:#2D5A8A">Bug Buster</span></div>
+    <div class="level"><div class="hex" style="background:#7B55E0">5</div><h3>Test Pilot</h3><p>Test plans, devices, accessibility, alpha &amp; beta</p><span class="badge" style="color:#5B3BC0">Quality Guardian</span></div>
+    <div class="level"><div class="hex" style="background:#D0533A">6</div><h3>Release Ranger</h3><p>Versions, Git, staging, deploying, rollback</p><span class="badge" style="color:#A63A24">Launch Commander</span></div>
+    <div class="level"><div class="hex" style="background:#172B45">7</div><h3>Studio Creator</h3><p>Portfolio, documentation, mentoring</p><span class="badge" style="color:#172B45">Master Creator</span></div>
+  </div>
+</section>
+
+<section class="wrap pad-sm split">
+  <div>
+    <h2>XP for real achievements</h2>
+    <p>XP comes from meaningful milestones, never from the number of prompts you send.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Activity</th><th>XP</th></tr></thead>
+      <tbody>
+        <tr><td>Write a project brief</td><td>50</td></tr>
+        <tr><td>Improve a prompt</td><td>30</td></tr>
+        <tr><td>Build a working feature</td><td>100</td></tr>
+        <tr><td>Find and fix a bug</td><td>75</td></tr>
+        <tr><td>Write a test plan</td><td>100</td></tr>
+        <tr><td>Complete alpha or beta testing</td><td>150</td></tr>
+        <tr><td>Publish a finished game</td><td>250</td></tr>
+        <tr><td>Explain what you learned</td><td>100</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small" style="margin-top:8px">Example values, to be tested with real creators.</p>
+  </div>
+  <img src="/img/academy.webp" alt="A learning path with achievement badges and locked levels" width="1080" height="740">
+</section>
+
+<section class="band-white" id="creators-check">
+  <div class="wrap pad">
+    <p class="kicker">Quality over "AI slop"</p>
+    <h2>The Creator's Check</h2>
+    <p class="lead">Before a project counts as finished, it's checked against five principles. A game that looks great but doesn't work won't earn a creator badge.</p>
+    <div class="checks" style="margin:24px 0 36px">
+      <div style="background:#0F6E66"><span class="n">1</span><b>Intent</b><span>Can you explain what you wanted to build?</span></div>
+      <div style="background:#5B47D6"><span class="n">2</span><b>Ownership</b><span>Can you explain the parts AI helped with?</span></div>
+      <div style="background:#B4540F"><span class="n">3</span><b>Functionality</b><span>Does it actually work?</span></div>
+      <div style="background:#2D5A8A"><span class="n">4</span><b>Quality</b><span>Tested on different devices and situations?</span></div>
+      <div style="background:#172B45"><span class="n">5</span><b>Improvement</b><span>Better after testing or feedback?</span></div>
+    </div>
+
+    <div class="split" style="align-items:start">
+      <div>
+        <h3>How the check works</h3>
+        <p><b>AI does the checking, and always shows its working.</b> For every principle it records a verdict, its justification, the evidence it used and how confident it is. If it's unsure, borderline, or spots something like personal information, it flags the check for a human review.</p>
+        <p>Parents, teachers and moderators can read the full record and overrule any decision. Nothing is a black box.</p>
+        <h3 style="margin-top:24px">Try the demo</h3>
+        <form id="cc-form">
+          <div class="field"><label for="intent">1. What did you want to build?</label><textarea id="intent" name="intent"></textarea></div>
+          <div class="field"><label for="ownership">2. Which parts did AI help with, and how do they work?</label><textarea id="ownership" name="ownership"></textarea></div>
+          <div class="field"><label for="functionality">3. Does it work? What did you check?</label><textarea id="functionality" name="functionality"></textarea></div>
+          <div class="field"><label for="quality">4. How did you test it?</label><textarea id="quality" name="quality"></textarea></div>
+          <div class="field"><label for="improvement">5. What did you improve after testing or feedback?</label><textarea id="improvement" name="improvement"></textarea></div>
+          <div class="btn-row"><button class="btn btn-orange" type="submit">Run the Creator's Check</button><button class="btn btn-ghost" type="button" id="cc-example">Fill in an example</button></div>
+        </form>
+      </div>
+      <div>
+        <div id="cc-report" class="report" hidden aria-live="polite"></div>
+        <div class="card peach">
+          <h3>What gets recorded</h3>
+          <ul>
+            <li>The verdict for each principle</li>
+            <li>The <b>justification</b>: why it decided that</li>
+            <li>The evidence it relied on</li>
+            <li>A confidence level</li>
+            <li>Whether a person should review it, and why</li>
+            <li>Which checker and version made the decision</li>
+          </ul>
+          <p class="small">This demo uses simple rules so it runs without any AI. In the real platform, Claude does the check and returns exactly the same kind of record.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="/js/checks.js" defer></script>

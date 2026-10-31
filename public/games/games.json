@@ -1,0 +1,46 @@
+[
+  {
+    "id": "hedgehog-hop",
+    "title": "Hedgehog Hop",
+    "blurb": "Jump the logs, munch the apples. How far can you go?",
+    "controls": "Space or tap to jump",
+    "image": "/img/island.webp",
+    "madeBy": "PlayTinker team (example game)",
+    "visibility": "Public, approved",
+    "params": [
+      { "key": "gravity", "label": "Gravity", "min": 0.2, "max": 1.6, "step": 0.1, "value": 0.7, "hint": "Lower = floaty moon jumps" },
+      { "key": "jump", "label": "Jump power", "min": 6, "max": 22, "step": 1, "value": 13, "hint": "How high the hedgehog leaps" },
+      { "key": "speed", "label": "World speed", "min": 2, "max": 12, "step": 1, "value": 5, "hint": "Faster = harder" },
+      { "key": "colour", "label": "Hedgehog colour", "type": "color", "value": "#8B5A2B", "hint": "Make it yours" }
+    ],
+    "explain": [
+      ["Section 1 · Settings", "Values like <code>GRAVITY</code> and <code>JUMP</code> are read from the web address. That is how Remix works: change the numbers, the game changes."],
+      ["Section 4 · Controls", "<code>jump()</code> only works when <code>onGround</code> is true. That rule stops the hedgehog jumping in mid-air."],
+      ["Section 5 · Gravity", "Every frame, gravity is added to the speed (<code>hog.vy += GRAVITY</code>). A jump sets the speed negative, so the hedgehog goes up, slows and falls."],
+      ["Section 5 · Collisions", "The game checks whether the hedgehog's box overlaps a log's box. If it does, the game is over."],
+      ["Section 7 · Game loop", "<code>requestAnimationFrame</code> runs update then draw about 60 times a second. Every game has a loop like this."]
+    ]
+  },
+  {
+    "id": "star-catcher",
+    "title": "Star Catcher",
+    "blurb": "Catch the falling stars and dodge the space rocks.",
+    "controls": "Arrow keys, or drag",
+    "image": "/img/academy.webp",
+    "madeBy": "PlayTinker team (example game)",
+    "visibility": "Public, approved",
+    "params": [
+      { "key": "fall", "label": "Fall speed", "min": 1, "max": 8, "step": 0.5, "value": 3, "hint": "How fast things drop" },
+      { "key": "basket", "label": "Basket width", "min": 50, "max": 260, "step": 10, "value": 110, "hint": "Bigger = easier" },
+      { "key": "rocks", "label": "Rock chance", "min": 0, "max": 0.8, "step": 0.05, "value": 0.25, "hint": "0 means no rocks at all" },
+      { "key": "lives", "label": "Lives", "min": 1, "max": 9, "step": 1, "value": 3, "hint": "How many rocks you can survive" }
+    ],
+    "explain": [
+      ["Section 1 · Settings", "<code>FALL_SPEED</code>, <code>BASKET_WIDTH</code> and <code>ROCK_CHANCE</code> control difficulty. Game designers call this balancing."],
+      ["Section 4 · Two kinds of control", "Keyboard and pointer controls both move the same <code>basket.x</code>, so the game works on laptops and phones."],
+      ["Section 5 · Randomness", "<code>Math.random() &lt; ROCK_CHANCE</code> decides if a new object is a rock. With 0.25, about one in four is a rock."],
+      ["Section 5 · Catching", "An object is caught when it is level with the basket AND within half the basket's width of its centre."],
+      ["Section 6 · Drawing a star", "<code>star()</code> joins ten points, alternating long and short, to make a five-pointed star."]
+    ]
+  }
+]

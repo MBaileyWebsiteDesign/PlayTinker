@@ -1,0 +1,52 @@
+<section class="wrap pad-sm">
+  <p class="kicker">Play · Inspect · Remix</p>
+  <h1>Game library</h1>
+  <p class="lead">Original games that run right here in your browser. No downloads, no adverts. Every game has three buttons: <b>Play</b> it, <b>Inspect</b> how it works, and <b>Remix</b> it into something new.</p>
+</section>
+
+<section id="studio" class="wrap pad-sm" hidden>
+  <div class="studio">
+    <div>
+      <div class="frame-box">
+        <!-- Games run in a sandbox: no access to the website, cookies or your account. -->
+        <iframe id="game-frame" sandbox="allow-scripts" title="Game" loading="lazy"></iframe>
+      </div>
+      <p class="small" style="margin-top:10px"><b id="studio-title"></b> · <span id="studio-controls"></span> · Click the game first so it hears your keys.</p>
+    </div>
+    <div>
+      <div class="tabs" role="tablist" aria-label="Game tools">
+        <button role="tab" id="t-play" aria-controls="panel-play" data-hash="play" type="button">Play</button>
+        <button role="tab" id="t-inspect" aria-controls="panel-inspect" data-hash="inspect" type="button">Inspect</button>
+        <button role="tab" id="t-remix" aria-controls="panel-remix" data-hash="remix" type="button">Remix</button>
+      </div>
+      <div class="panel card" id="panel-play" role="tabpanel" aria-labelledby="t-play">
+        <h3>Just play</h3>
+        <p>Have fun! When you're ready, open <b>Inspect</b> to see how it works. Every game here is made from the same three ingredients: settings, an update step and a draw step, repeated about 60 times a second.</p>
+        <p class="small">Thinking question: what one rule would make this game more fun?</p>
+      </div>
+      <div class="panel" id="panel-inspect" role="tabpanel" aria-labelledby="t-inspect" hidden>
+        <ul class="explain" id="explain"></ul>
+        <details style="margin-top:14px"><summary><b>See the full code</b></summary><pre class="code" id="source"></pre></details>
+      </div>
+      <div class="panel card lilac" id="panel-remix" role="tabpanel" aria-labelledby="t-remix" hidden>
+        <h3>Remix it</h3>
+        <p class="small">Change the settings and press <b>Try my remix</b>. Each slider changes one number in the code.</p>
+        <form id="remix-form"></form>
+        <p id="remix-note" class="small" hidden style="margin-top:12px">Look at the web address of the game: your settings are in it. In the Creator Studio you could save this remix as your own project.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap pad-sm">
+  <div class="grid g3" id="library"></div>
+</section>
+
+<section class="band-white">
+  <div class="wrap pad-sm grid g3">
+    <div><h3>Safe by design</h3><p>Games run in a locked sandbox. They can't see your account, other pages or anything personal.</p></div>
+    <div><h3>Public only with permission</h3><p>A creator's game appears here only if it passes the Creator's Check and a parent or guardian says yes.</p></div>
+    <div><h3>Made to be learned from</h3><p>The code is short, readable and full of comments, so curious players can become creators.</p></div>
+  </div>
+</section>
+<script src="/js/play.js" defer></script>

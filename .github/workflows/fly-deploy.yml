@@ -1,0 +1,38 @@
+# Deploys to Fly.io automatically:
+#   main    -> production app (fly.toml)
+#   staging -> staging app    (fly.staging.toml)
+# Needs one repository secret: FLY_API_TOKEN (create with: fly tokens create org -x 999999h,
+# or one deploy token per app). Tests must pass before anything deploys.
+name: Fly Deploy
+on:
+  push:
+    branches: [main, staging]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm test
+  deploy:
+    needs: test
+    name: Deploy ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    concurrency: deploy-${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy staging
+        if: github.ref_name == 'staging'
+        run: flyctl deploy --remote-only --config fly.staging.toml
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Deploy production
+        if: github.ref_name == 'main'
+        run: flyctl deploy --remote-only --config fly.toml
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
