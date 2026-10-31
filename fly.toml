@@ -1,9 +1,10 @@
-# fly.toml app configuration file generated for playtinker on 2026-10-31T11:34:17Z
+# Fly.io configuration for the PlayTinker LIVE site (deployed from the main branch).
+# Staging uses fly.staging.toml (app playtinker-concept-staging).
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'playtinker'
+app = 'playtinker-concept'
 primary_region = 'lhr'
 
 [build]
@@ -30,4 +31,3 @@ primary_region = 'lhr'
   memory = '256mb'
   cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 256
