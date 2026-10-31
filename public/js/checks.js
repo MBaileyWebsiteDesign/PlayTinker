@@ -47,7 +47,7 @@
       render(document.getElementById('prompt-report'), await post('/api/prompt-check', { prompt: pf.prompt.value }));
     });
     document.querySelectorAll('[data-example]').forEach((b) => b.addEventListener('click', () => {
-      pf.prompt.value = b.dataset.example; pf.requestSubmit();
+      pf.prompt.value = b.dataset.example; pf.prompt.dispatchEvent(new Event('input')); pf.requestSubmit();
     }));
   }
 
@@ -64,6 +64,7 @@
       cf.functionality.value = 'It works. It loads with no errors and you can play until you hit a log.';
       cf.quality.value = 'I tested it on my laptop and my mum\'s phone. On the phone the jump button did not work at first. My brother tried it too.';
       cf.improvement.value = 'After my brother said it was too easy I made the logs come faster as your score goes up, and I fixed tapping on phones.';
+      cf.querySelectorAll('textarea').forEach((t) => t.dispatchEvent(new Event('input')));
     });
   }
 })();

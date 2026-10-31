@@ -204,3 +204,45 @@ details.faq p{margin:10px 0 0}
 @media (max-width:700px){.footer-grid{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 [id],.report{scroll-margin-top:96px}
+
+/* ---- Responsive hardening (UI review, Oct 2026) ---- */
+html,body{overflow-x:clip}
+/* Grid/flex children may shrink below their content width, so long code or words can't widen the page */
+.grid>*,.split>*,.studio>*,.stack>*,.levels>*,.checks>*,ol.steps li,.hero>*{min-width:0}
+/* Code samples wrap instead of scrolling sideways */
+pre.block,.code,details.json pre,.callout .mono{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+.code,details.json pre{max-height:none;overflow:visible}
+p,li,td,h1,h2,h3{overflow-wrap:break-word}
+/* Tables become stacked cards on small screens (labels added by site.js) */
+@media (max-width:700px){
+  .table-wrap{overflow:visible;border:0;background:none}
+  .table-wrap table,.table-wrap tbody,.table-wrap tr,.table-wrap td{display:block;width:100%}
+  .table-wrap thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .table-wrap tr{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-bottom:10px}
+  .table-wrap tr:nth-child(even) td{background:none}
+  .table-wrap td{border:0;padding:4px 0}
+  .table-wrap td[data-label]::before{content:attr(data-label);display:block;font-family:var(--head);font-weight:600;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-dark)}
+  ol.steps li{padding:16px 16px 16px 60px}
+  ol.steps li::before{left:12px;width:34px;height:34px}
+  .pad{padding-top:52px;padding-bottom:52px}
+  .card{padding:20px}
+  .card img.cover{width:calc(100% + 40px);margin:-20px -20px 16px}
+  .btn{font-size:1.02rem}
+}
+/* Tablet tweaks */
+@media (min-width:701px) and (max-width:1020px){
+  .stack{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+/* Even grids: avoid orphaned cards */
+@media (min-width:700px){ .g3{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:860px){ .checks>div:last-child{grid-column:1/-1} }
+@media (max-width:560px){
+  .stack{grid-template-columns:1fr}
+  .stack .card{text-align:left;display:grid;grid-template-columns:56px 1fr;gap:4px 14px;align-items:start}
+  .stack .logo{width:52px;height:52px;margin:0;grid-row:span 2}
+  .stack .card h3{margin:4px 0 0}
+}
+@media (max-width:700px){
+  .table-wrap td:first-child{font-family:var(--head);font-weight:600;font-size:1.1rem;color:var(--midnight)}
+  .table-wrap td:first-child::before{display:none}
+}

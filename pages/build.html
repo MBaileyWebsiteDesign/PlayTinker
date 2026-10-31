@@ -68,15 +68,20 @@ fly deploy         # every time you want to publish an update</pre>
       <tr><td>Future AI in the platform</td><td>Claude via our server</td><td>Will power Pip and the Creator's Check. Keys stay on the server, never in the browser</td></tr>
     </tbody>
   </table></div>
-  <pre class="block" style="margin-top:22px">playtinker/
-├── server.js          # small Node.js web server
-├── layout.html        # shared header and footer
-├── pages/             # one file per page
-├── lib/checks.js      # Prompt Builder and Creator's Check logic
-├── public/games/      # each game: index.html + game.js
-├── Dockerfile         # how Fly.io packages the site
-├── fly.toml           # Fly.io settings
-└── .github/workflows/ # auto-deploy from GitHub to Fly.io</pre>
+  <h3 style="margin-top:28px">What's in the project</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>File or folder</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><code>server.js</code></td><td>A small Node.js web server</td></tr>
+      <tr><td><code>layout.html</code></td><td>The shared header and footer</td></tr>
+      <tr><td><code>pages/</code></td><td>One file per page</td></tr>
+      <tr><td><code>lib/checks.js</code></td><td>The Prompt Builder and Creator's Check logic</td></tr>
+      <tr><td><code>public/games/</code></td><td>Each game: <code>index.html</code> + <code>game.js</code></td></tr>
+      <tr><td><code>Dockerfile</code></td><td>How Fly.io packages the site</td></tr>
+      <tr><td><code>fly.toml</code>, <code>fly.staging.toml</code></td><td>Fly.io settings for the live and staging sites</td></tr>
+      <tr><td><code>.github/workflows/</code></td><td>Automatic deploys from GitHub to Fly.io</td></tr>
+    </tbody>
+  </table></div>
 </section>
 
 <section class="band-mint">
