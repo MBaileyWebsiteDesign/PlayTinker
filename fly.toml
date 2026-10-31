@@ -1,29 +1,33 @@
-# Fly.io configuration for the PlayTinker concept site.
-# Change "app" to a unique name the first time you run `fly launch --no-deploy`.
-app = "playtinker-concept"
-primary_region = "lhr"   # London
+# fly.toml app configuration file generated for playtinker on 2026-10-31T11:34:17Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'playtinker'
+primary_region = 'lhr'
 
 [build]
 
 [env]
-  NODE_ENV = "production"
-  PORT = "8080"
+  NODE_ENV = 'production'
+  PORT = '8080'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"     # sleeps when idle to keep costs low
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
 
   [[http_service.checks]]
-    grace_period = "10s"
-    interval = "30s"
-    method = "GET"
-    path = "/healthz"
-    timeout = "5s"
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '10s'
+    method = 'GET'
+    path = '/healthz'
 
 [[vm]]
-  memory = "256mb"
-  cpu_kind = "shared"
+  memory = '256mb'
+  cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 256
