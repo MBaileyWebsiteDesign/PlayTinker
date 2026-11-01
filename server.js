@@ -12,6 +12,9 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { checkPrompt, creatorsCheck } = require('./lib/checks');
+const { gameCheck } = require('./lib/game-check');
+const { pip, aiEnabled, MODEL } = require('./lib/pip');
+const { listTemplates } = require('./lib/studio-templates');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -23,6 +26,7 @@ const PAGES = {
   '':               { file: 'home',     title: 'Imagine it. Tinker with it. Play it.', nav: null },
   'play':           { file: 'play',     title: 'Play',                    nav: 'Play' },
   'create':         { file: 'create',   title: 'Create',                  nav: 'Create' },
+  'studio':         { file: 'studio',   title: 'Creator Studio',          nav: 'Studio' },
   'academy':        { file: 'academy',  title: 'Academy',                 nav: 'Academy' },
   'build-your-own': { file: 'build',    title: 'Build your own',          nav: 'Build your own' },
   'parents':        { file: 'parents',  title: 'Parents & Educators',     nav: 'Parents & Educators' },
@@ -53,6 +57,32 @@ app.use((req, res, next) => {
   next();
 });
 
+// ---- Safe preview runner for creators' games ----
+// Served with its own, much stricter policy: sandboxed opaque origin, no network at all,
+// no forms, no storage. User code can only draw on its canvas and talk to the Studio.
+const runnerHtml = fs.readFileSync(path.join(__dirname, 'sandbox', 'runner.html'), 'utf8');
+app.get('/sandbox/run', (req, res) => {
+  res.set({
+    'Content-Security-Policy': [
+      'sandbox allow-scripts',
+      "default-src 'none'",
+      "script-src 'unsafe-inline' blob:",
+      "style-src 'unsafe-inline'",
+      'img-src data: blob:',
+      'media-src data: blob:',
+      'font-src data:',
+      "connect-src 'none'",
+      "form-action 'none'",
+      "base-uri 'none'",
+      "frame-ancestors 'self'",
+    ].join('; '),
+    'Cache-Control': 'no-store',
+  });
+  res.type('html').send(runnerHtml);
+});
+
+app.use('/api/studio', express.json({ limit: '200kb' }));
+app.use('/api/pip', express.json({ limit: '200kb' }));
 app.use(express.json({ limit: '20kb' }));
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h', index: false }));
 
@@ -92,6 +122,22 @@ app.post('/api/creators-check', (req, res) => {
   const input = ['intent', 'ownership', 'functionality', 'quality', 'improvement']
     .reduce((o, k) => ({ ...o, [k]: String(b[k] || '').slice(0, 1500) }), {});
   res.json(creatorsCheck(input));
+});
+
+// ---- Creator Studio API ----
+app.get('/api/studio/templates', (req, res) => res.json({ templates: listTemplates() }));
+
+app.get('/api/pip/status', (req, res) => res.json({ mode: aiEnabled() ? 'claude' : 'demo', model: aiEnabled() ? MODEL : null }));
+
+app.post('/api/pip', async (req, res) => {
+  const b = req.body || {};
+  const history = Array.isArray(b.history) ? b.history.slice(-6) : [];
+  res.json(await pip({ message: b.message, code: b.code, history, ip: req.get('fly-client-ip') || req.ip }));
+});
+
+app.post('/api/studio/check', (req, res) => {
+  const b = req.body || {};
+  res.json(gameCheck({ code: String(b.code || ''), runtime: b.runtime || null, testPlan: Array.isArray(b.testPlan) ? b.testPlan.slice(0, 50) : [] }));
 });
 
 app.get('/healthz', (req, res) => res.json({ ok: true }));

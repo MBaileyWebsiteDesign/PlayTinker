@@ -8,7 +8,7 @@ let server, base;
 test.before(() => new Promise((r) => { server = app.listen(0, () => { base = `http://localhost:${server.address().port}`; r(); }); }));
 test.after(() => server.close());
 
-for (const p of ['/', '/play', '/create', '/academy', '/build-your-own', '/parents', '/safety', '/about']) {
+for (const p of ['/', '/play', '/create', '/studio', '/academy', '/build-your-own', '/parents', '/safety', '/about']) {
   test(`page ${p} loads with security headers`, async () => {
     const res = await fetch(base + p);
     assert.strictEqual(res.status, 200);

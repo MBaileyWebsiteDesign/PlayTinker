@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PlayTinker safe preview</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0B1830; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; touch-action: none; }
+  #pt-stop { position: fixed; inset: auto 8px 8px 8px; background: #fff; color: #172B45; font: 600 15px/1.4 system-ui, sans-serif; padding: 10px 12px; border-radius: 10px; border-left: 6px solid #FF5A5F; display: none; }
+</style>
+</head>
+<body>
+<canvas id="game" width="800" height="500" aria-label="Your game"></canvas>
+<div id="pt-stop" role="alert"></div>
+<script>
+/*
+ * PlayTinker safe preview runner.
+ * Served with a strict Content Security Policy (no network, no storage access, sandboxed
+ * opaque origin). It receives game code from the Studio by postMessage, runs it, reports
+ * errors and console output back, and (in test mode) runs automatic checks.
+ */
+(function () {
+  'use strict';
+  var send = function (m) { m.pt = 1; try { parent.postMessage(m, '*'); } catch (e) {} };
+  var canvas = document.getElementById('game');
+  var stopBox = document.getElementById('pt-stop');
+  var errors = [], blocked = [], listened = {}, frames = 0, ran = false, dead = false, testMode = false;
+
+  function fit() {
+    var s = Math.min(innerWidth / canvas.width, innerHeight / canvas.height);
+    canvas.style.width = Math.floor(canvas.width * s) + 'px';
+    canvas.style.height = Math.floor(canvas.height * s) + 'px';
+  }
+  addEventListener('resize', fit); fit();
+
+  // Console output goes to the Studio console
+  function fmt(v) {
+    if (typeof v === 'string') return v;
+    try { return JSON.stringify(v); } catch (e) { return String(v); }
+  }
+  ['log', 'info', 'warn', 'error'].forEach(function (k) {
+    var orig = console[k];
+    console[k] = function () {
+      var text = Array.prototype.map.call(arguments, fmt).join(' ').slice(0, 500);
+      send({ type: 'console', level: k, text: text });
+      orig.apply(console, arguments);
+    };
+  });
+
+  function stop(msg) {
+    stopBox.textContent = msg;
+    stopBox.style.display = 'block';
+  }
+
+  addEventListener('error', function (e) {
+    var err = { message: String(e.message || (e.error && e.error.message) || 'Unknown error').replace(/^Uncaught /, ''), line: e.lineno || 0, col: e.colno || 0 };
+    if (e.error && e.error.ptLoop) err.line = loopLine; // the guard threw, so point at the user's loop
+    if (/Game stopped/.test(err.message)) return;
+    if (errors.length < 20) errors.push(err);
+    send({ type: 'error', error: err });
+    if (!testMode) stop('Error on line ' + (err.line || '?') + ': ' + err.message);
+  });
+  addEventListener('unhandledrejection', function (e) {
+    var err = { message: String((e.reason && e.reason.message) || e.reason), line: 0, col: 0 };
+    errors.push(err); send({ type: 'error', error: err });
+  });
+  addEventListener('securitypolicyviolation', function (e) {
+    var what = e.violatedDirective + (e.blockedURI ? ' (' + String(e.blockedURI).slice(0, 80) + ')' : '');
+    if (blocked.indexOf(what) < 0) blocked.push(what);
+    send({ type: 'blocked', what: what });
+  });
+
+  // Count frames, and stop everything if a loop has frozen the game
+  var nativeRaf = window.requestAnimationFrame.bind(window);
+  window.requestAnimationFrame = function (cb) {
+    return nativeRaf(function (t) { if (dead) return; frames++; cb(t); });
+  };
+
+  // Remember which kinds of input the game listens for
+  var nativeAdd = EventTarget.prototype.addEventListener;
+  EventTarget.prototype.addEventListener = function (type) {
+    listened[type] = true;
+    return nativeAdd.apply(this, arguments);
+  };
+
+  // No pop-ups in the sandbox
+  window.alert = window.confirm = window.prompt = function (m) { console.warn('Pop-ups are turned off in PlayTinker games: ' + m); return null; };
+
+  // Loop guard: every for/while/do loop calls this. If one runs for more than 1.5s
+  // without letting the browser breathe, it is stopped instead of freezing the page.
+  var loopStart = 0, loopCount = 0, loopLine = 0;
+  window.__ptLoop = function (line) {
+    loopLine = line;
+    if (dead) throw new Error('Game stopped');
+    if ((++loopCount & 1023) !== 0) return;
+    var now = performance.now();
+    if (!loopStart) {
+      loopStart = now;
+      queueMicrotask(function () { loopStart = 0; loopCount = 0; });
+    } else if (now - loopStart > 1500) {
+      dead = true;
+      stop('The loop on line ' + loopLine + ' ran for too long, so PlayTinker stopped the game. Check that your loop can finish.');
+      var le = new Error('A loop ran for too long, so it was stopped. Check that your loop can finish.');
+      le.ptLoop = true;
+      throw le;
+    }
+  };
+
+  // Add __ptLoop() to the start of every loop body, keeping line numbers the same.
+  function guard(src) {
+    var out = '', i = 0, n = src.length;
+    function lineAt(k) { var c = 1; for (var q = 0; q < k; q++) if (src.charCodeAt(q) === 10) c++; return c; }
+    function skipString(k, q) { k++; while (k < n && src[k] !== q) { if (src[k] === '\\') k++; k++; } return k; }
+    while (i < n) {
+      var ch = src[i], nx = src[i + 1];
+      if (ch === '/' && nx === '/') { var e1 = src.indexOf('\n', i); e1 = e1 < 0 ? n : e1; out += src.slice(i, e1); i = e1; continue; }
+      if (ch === '/' && nx === '*') { var e2 = src.indexOf('*/', i + 2); e2 = e2 < 0 ? n : e2 + 2; out += src.slice(i, e2); i = e2; continue; }
+      if (ch === '"' || ch === "'" || ch === '`') { var e3 = skipString(i, ch); out += src.slice(i, e3 + 1); i = e3 + 1; continue; }
+      if ((ch === 'f' || ch === 'w' || ch === 'd') && !/[\w$.]/.test(src[i - 1] || '')) {
+        var m = /^(for|while|do)(?![\w$])/.exec(src.slice(i, i + 6));
+        if (m) {
+          var j = i + m[1].length;
+          if (m[1] === 'do') {
+            while (j < n && /\s/.test(src[j])) j++;
+            if (src[j] === '{') { out += src.slice(i, j + 1) + '__ptLoop(' + lineAt(i) + ');'; i = j + 1; continue; }
+          } else {
+            while (j < n && /\s/.test(src[j])) j++;
+            if (src[j] === '(') {
+              var depth = 0, k = j;
+              for (; k < n; k++) {
+                var c = src[k];
+                if (c === '(') depth++;
+                else if (c === ')') { depth--; if (depth === 0) break; }
+                else if (c === '"' || c === "'" || c === '`') k = skipString(k, c);
+              }
+              var b = k + 1;
+              while (b < n && /\s/.test(src[b])) b++;
+              if (src[b] === '{') { out += src.slice(i, b + 1) + '__ptLoop(' + lineAt(i) + ');'; i = b + 1; continue; }
+            }
+          }
+        }
+      }
+      out += ch; i++;
+    }
+    return out;
+  }
+
+  // ---- automatic tests (test mode only) ----
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function snapshot() {
+    var c = document.querySelector('canvas');
+    var ctx = c && c.getContext && c.getContext('2d');
+    if (!ctx) return null;
+    var data;
+    try { data = ctx.getImageData(0, 0, c.width, c.height).data; } catch (e) { return null; }
+    var hash = 0, colours = {}, count = 0;
+    for (var y = 0; y < c.height; y += 10) {
+      for (var x = 0; x < c.width; x += 10) {
+        var p = (y * c.width + x) * 4;
+        var v = (data[p] >> 3) << 10 | (data[p + 1] >> 3) << 5 | (data[p + 2] >> 3);
+        if (!colours[v]) { colours[v] = 1; count++; }
+        hash = (hash * 31 + v) | 0;
+      }
+    }
+    return { hash: hash, colours: count };
+  }
+  function key(type, code, k) {
+    var target = document.activeElement || document.body;
+    target.dispatchEvent(new KeyboardEvent(type, { code: code, key: k, bubbles: true, cancelable: true }));
+  }
+  function tap() {
+    var c = document.querySelector('canvas') || canvas;
+    var r = c.getBoundingClientRect();
+    var o = { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, bubbles: true, cancelable: true, buttons: 1, pointerType: 'mouse', isPrimary: true };
+    c.dispatchEvent(new PointerEvent('pointerdown', o));
+    c.dispatchEvent(new MouseEvent('mousedown', o));
+    o.buttons = 0;
+    c.dispatchEvent(new PointerEvent('pointerup', o));
+    c.dispatchEvent(new MouseEvent('mouseup', o));
+    c.dispatchEvent(new MouseEvent('click', o));
+  }
+  function autoTest() {
+    var t0 = performance.now();
+    var a, f0;
+    wait(700).then(function () {
+      a = snapshot(); f0 = frames;
+      key('keydown', 'Space', ' '); key('keyup', 'Space', ' ');
+      tap();
+      return wait(250);
+    }).then(function () {
+      key('keydown', 'ArrowRight', 'ArrowRight'); key('keydown', 'ArrowUp', 'ArrowUp');
+      return wait(500);
+    }).then(function () {
+      key('keyup', 'ArrowRight', 'ArrowRight'); key('keyup', 'ArrowUp', 'ArrowUp');
+      key('keydown', 'ArrowLeft', 'ArrowLeft');
+      return wait(500);
+    }).then(function () {
+      key('keyup', 'ArrowLeft', 'ArrowLeft');
+      return wait(800);
+    }).then(function () {
+      var b = snapshot();
+      var elapsed = performance.now() - t0;
+      var w = window;
+      send({ type: 'tests', results: {
+        ranFor: Math.round(elapsed),
+        errors: errors.slice(0, 5),
+        blocked: blocked.slice(0, 5),
+        draws: !!(b && b.colours > 1),
+        colours: b ? b.colours : 0,
+        changes: !!(a && b && a.hash !== b.hash),
+        fps: Math.round((frames - f0) / ((elapsed - 700) / 1000)),
+        listens: {
+          keyboard: !!(listened.keydown || listened.keyup || listened.keypress || w.onkeydown || document.onkeydown),
+          touch: !!(listened.pointerdown || listened.touchstart || listened.mousedown || listened.click || w.onclick || document.onclick || w.onpointerdown || (document.querySelector('canvas') || {}).onclick),
+        },
+        stopped: dead,
+      } });
+    });
+  }
+
+  function run(d) {
+    if (ran) return;
+    ran = true;
+    testMode = !!d.test;
+    var src = guard(String(d.code || ''));
+    var url;
+    try { url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' })); } catch (e) { url = null; }
+    var s = document.createElement('script');
+    var started = function () { send({ type: 'started' }); if (testMode) autoTest(); };
+    if (url) {
+      s.src = url;
+      s.onload = started;
+      s.onerror = function () { send({ type: 'error', error: { message: 'The game code could not be loaded.', line: 0, col: 0 } }); };
+      document.body.appendChild(s);
+    } else {
+      s.textContent = src;
+      document.body.appendChild(s);
+      started();
+    }
+  }
+
+  addEventListener('message', function (e) {
+    if (e.source !== parent) return;
+    var d = e.data;
+    if (d && d.type === 'run') run(d);
+  });
+  send({ type: 'ready' });
+})();
+</script>
+</body>
+</html>

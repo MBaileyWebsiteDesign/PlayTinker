@@ -1,0 +1,175 @@
+<section class="cstudio" id="studio" data-view="simple" aria-label="Creator Studio">
+  <noscript><div class="wrap pad"><p>The Creator Studio needs JavaScript turned on.</p></div></noscript>
+
+  <div class="st-bar">
+    <div class="st-name">
+      <label for="st-name" class="sr-only">Project name</label>
+      <input id="st-name" type="text" maxlength="40" autocomplete="off" spellcheck="false" value="My game">
+      <span id="st-status" class="st-status" aria-live="polite">Saved on this device</span>
+    </div>
+    <div class="st-actions">
+      <button id="st-run" class="btn btn-orange btn-sm" type="button" title="Run (Ctrl+Enter)">▶ Run</button>
+      <button id="st-save" class="btn btn-teal btn-sm" type="button" title="Save version (Ctrl+S)">Save version</button>
+      <button id="st-new" class="btn btn-ghost btn-sm" type="button">My games</button>
+      <div class="st-switch" role="group" aria-label="Studio view">
+        <button type="button" data-view="simple" aria-pressed="true">Simple</button>
+        <button type="button" data-view="tech" aria-pressed="false">Technical</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="st-grid">
+    <aside class="st-chat" aria-label="Chat with Pip">
+      <div class="st-chat-head">
+        <img src="/img/pip-icon.webp" alt="" width="40" height="40">
+        <div><b>Pip</b> <span id="pip-mode" class="tag">connecting…</span><br><span class="small">Your helper. You're the creator.</span></div>
+      </div>
+      <div id="chat-log" class="st-log" role="log" aria-live="polite" aria-label="Messages"></div>
+      <div id="chips" class="st-chips" aria-label="Ideas to try"></div>
+      <form id="chat-form" class="st-chat-form">
+        <label for="chat-input" class="sr-only">Message to Pip</label>
+        <textarea id="chat-input" data-nogrow rows="2" maxlength="2000" placeholder="Tell Pip what to change, e.g. make the basket faster"></textarea>
+        <button class="btn btn-orange btn-sm" type="submit">Send</button>
+      </form>
+      <p class="small st-privacy">Don't share your name, school or address. Pip checks first and won't send personal details to an AI.</p>
+    </aside>
+
+    <div class="st-preview">
+      <div class="st-preview-bar">
+        <div class="st-sizes" role="group" aria-label="Preview size">
+          <button type="button" data-size="phone" aria-pressed="false" title="Phone (upright)">📱 Phone</button>
+          <button type="button" data-size="phone-land" aria-pressed="false" title="Phone (sideways)">📱↔</button>
+          <button type="button" data-size="tablet" aria-pressed="false" title="Tablet">Tablet</button>
+          <button type="button" data-size="desktop" aria-pressed="true" title="Desktop">💻 Desktop</button>
+        </div>
+        <button id="st-full" class="btn btn-ghost btn-sm" type="button">Full screen</button>
+      </div>
+      <div id="stage" class="st-stage">
+        <div id="device" class="st-device" data-size="desktop">
+          <iframe id="preview" sandbox="allow-scripts" title="Safe game preview" allow="fullscreen"></iframe>
+        </div>
+      </div>
+      <div id="run-status" class="st-run-status" aria-live="polite">Press Run to play your game.</div>
+    </div>
+  </div>
+
+  <div class="st-panels">
+    <div class="st-tabs" role="tablist" aria-label="Studio tools">
+      <button role="tab" id="t-code" aria-controls="p-code" data-hash="code">Code</button>
+      <button role="tab" id="t-tests" aria-controls="p-tests" data-hash="tests">Test plan <span id="tests-count" class="count"></span></button>
+      <button role="tab" id="t-checks" aria-controls="p-checks" data-hash="checks">Checks</button>
+      <button role="tab" id="t-versions" aria-controls="p-versions" data-hash="versions">Versions <span id="versions-count" class="count"></span></button>
+      <button role="tab" id="t-console" aria-controls="p-console" data-hash="console" class="tech-only">Console <span id="console-count" class="count"></span></button>
+      <button role="tab" id="t-export" aria-controls="p-export" data-hash="export" class="tech-only">Export</button>
+    </div>
+
+    <div id="p-code" role="tabpanel" aria-labelledby="t-code" class="st-panel">
+      <div class="st-code-head">
+        <div class="st-files tech-only" role="group" aria-label="Files">
+          <button type="button" class="on" aria-pressed="true">game.js</button>
+          <button type="button" id="show-html" aria-pressed="false">index.html</button>
+        </div>
+        <p class="small legend"><span class="key pip"></span> Lines Pip wrote <span class="key you"></span> Lines you wrote <span class="simple-only">· You can edit the code too. Press <b>Run</b> to see what happens.</span></p>
+      </div>
+      <div id="editor"></div>
+      <pre id="html-view" class="st-html" hidden></pre>
+      <p class="small tech-only">Keys: <kbd>Ctrl</kbd>+<kbd>Enter</kbd> run · <kbd>Ctrl</kbd>+<kbd>S</kbd> save version · <kbd>Tab</kbd> indents (press <kbd>Esc</kbd> then <kbd>Tab</kbd> to leave the editor).</p>
+    </div>
+
+    <div id="p-tests" role="tabpanel" aria-labelledby="t-tests" class="st-panel" hidden>
+      <div class="st-two">
+        <div>
+          <h2 class="h3">Automatic tests</h2>
+          <p class="small">These run every time you press Run, in a hidden copy of your game.</p>
+          <ul id="auto-tests" class="st-auto"><li class="small">Press Run to start the automatic tests.</li></ul>
+        </div>
+        <div>
+          <h2 class="h3">Your test plan</h2>
+          <p class="small">Play your game and mark each test. Real testers find the bugs that computers miss.</p>
+          <ul id="test-plan" class="st-plan"></ul>
+          <form id="test-add" class="st-inline-form">
+            <label for="test-new" class="sr-only">New test</label>
+            <input id="test-new" type="text" maxlength="160" placeholder="Add your own test, e.g. the score resets after game over">
+            <button class="btn btn-ghost btn-sm" type="submit">Add test</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="p-checks" role="tabpanel" aria-labelledby="t-checks" class="st-panel" hidden>
+      <div class="st-check-head">
+        <div>
+          <h2 class="h3">Automatic checks</h2>
+          <p class="small">Runs your game in the sandbox and reads your code. Every result explains <b>why</b>, so a grown-up can review it.</p>
+        </div>
+        <button id="run-checks" class="btn btn-lilac btn-sm" type="button">Run checks</button>
+      </div>
+      <div id="check-report" class="report" hidden aria-live="polite"></div>
+    </div>
+
+    <div id="p-versions" role="tabpanel" aria-labelledby="t-versions" class="st-panel" hidden>
+      <p class="small">Every save is a version. Pip saves one automatically each time it changes your code. Break something? Go back.</p>
+      <ol id="versions" class="st-versions" reversed></ol>
+    </div>
+
+    <div id="p-console" role="tabpanel" aria-labelledby="t-console" class="st-panel" hidden>
+      <div class="st-check-head">
+        <p class="small">Messages from <code>console.log()</code> and any errors from the preview.</p>
+        <button id="console-clear" class="btn btn-ghost btn-sm" type="button">Clear</button>
+      </div>
+      <pre id="console" class="st-console" aria-live="polite"></pre>
+    </div>
+
+    <div id="p-export" role="tabpanel" aria-labelledby="t-export" class="st-panel" hidden>
+      <div class="st-two">
+        <div>
+          <h2 class="h3">Take your game anywhere</h2>
+          <p>Download your project as a ZIP. It contains <code>index.html</code>, <code>game.js</code>, a README, your test plan and your latest check record.</p>
+          <div class="btn-row"><button id="export-zip" class="btn btn-orange btn-sm" type="button">Download ZIP</button><button id="copy-code" class="btn btn-ghost btn-sm" type="button">Copy game.js</button></div>
+          <p class="small" id="export-msg" aria-live="polite"></p>
+        </div>
+        <div class="card mint">
+          <h3>Put it on GitHub and host it yourself</h3>
+          <ol>
+            <li>Ask a grown-up to help you make a free GitHub account if you're under 13.</li>
+            <li>Create a new <b>public repository</b>, then choose <b>Add file → Upload files</b> and drop in the files from the ZIP.</li>
+            <li>Go to <b>Settings → Pages</b>, choose the <code>main</code> branch and save. Your game gets its own web address.</li>
+            <li>Or host it on Fly.io like PlayTinker does. See <a href="/build-your-own">Build your own</a>.</li>
+          </ol>
+          <p class="small">Sending projects straight to GitHub from the studio will come with accounts and parent permission.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <iframe id="tester" class="st-tester" sandbox="allow-scripts" title="Automatic tester" aria-hidden="true" tabindex="-1"></iframe>
+
+  <dialog id="new-dialog" class="st-dialog" aria-labelledby="new-title">
+    <form method="dialog" class="st-dialog-close"><button class="btn btn-ghost btn-sm" aria-label="Close">✕</button></form>
+    <h2 id="new-title">Start a new game</h2>
+    <p>Pick a starter. You'll change it into your own game with Pip.</p>
+    <div id="template-list" class="st-templates"></div>
+    <div id="my-games-wrap" hidden>
+      <h3>Your games on this device</h3>
+      <ul id="my-games" class="st-mygames"></ul>
+    </div>
+    <p class="small">Games are saved in this browser only, until accounts arrive. Nothing is uploaded.</p>
+  </dialog>
+
+  <dialog id="save-dialog" class="st-dialog st-dialog-sm" aria-labelledby="save-title">
+    <form id="save-form" method="dialog">
+      <h2 id="save-title" class="h3">Save a version</h2>
+      <label for="save-msg">What did you change?</label>
+      <input id="save-msg" type="text" maxlength="100" placeholder="e.g. made the rocks fall faster">
+      <div class="btn-row" style="margin-top:14px"><button class="btn btn-teal btn-sm" value="save">Save</button><button class="btn btn-ghost btn-sm" value="cancel" formnovalidate>Cancel</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="diff-dialog" class="st-dialog" aria-labelledby="diff-title">
+    <form method="dialog" class="st-dialog-close"><button class="btn btn-ghost btn-sm" aria-label="Close">✕</button></form>
+    <h2 id="diff-title" class="h3">Changes</h2>
+    <p class="small"><span class="key add"></span> added <span class="key del"></span> removed</p>
+    <pre id="diff-view" class="st-diff"></pre>
+  </dialog>
+</section>
+<script type="module" src="/js/studio/studio.js"></script>

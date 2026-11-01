@@ -6,20 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     t.querySelectorAll('tbody tr').forEach((tr) => [...tr.children].forEach((td, i) => { if (heads[i]) td.dataset.label = heads[i]; }));
   });
 
-  // Give each table cell its column label so tables can stack as cards on phones
-  document.querySelectorAll('.table-wrap table').forEach((t) => {
-    const heads = [...t.querySelectorAll('thead th')].map((th) => th.textContent.trim());
-    t.querySelectorAll('tbody tr').forEach((tr) => [...tr.children].forEach((td, i) => { if (heads[i]) td.dataset.label = heads[i]; }));
-  });
-
   // Text boxes grow to fit their content instead of scrolling inside the page
   const grow = (t) => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 4 + 'px'; };
-  document.querySelectorAll('textarea').forEach((t) => {
+  document.querySelectorAll('textarea:not([data-nogrow])').forEach((t) => {
     t.style.overflow = 'hidden';
     t.addEventListener('input', () => grow(t));
     grow(t);
   });
-  addEventListener('resize', () => document.querySelectorAll('textarea').forEach(grow));
+  addEventListener('resize', () => document.querySelectorAll('textarea:not([data-nogrow])').forEach(grow));
 
   const btn = document.querySelector('.menu-btn');
   const nav = document.getElementById('main-nav');

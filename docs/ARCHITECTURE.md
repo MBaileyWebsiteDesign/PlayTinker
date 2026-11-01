@@ -28,6 +28,22 @@ Browser ──► Fly.io machine (Node 22 + Express)
 - **Strict security headers:** CSP `default-src 'self'`, no inline scripts, frame-ancestors self.
 - **Games are isolated:** `sandbox="allow-scripts"` without `allow-same-origin` gives each game an opaque origin.
 
+## Creator Studio (v0.2)
+
+```
+Studio page (/studio) ──postMessage──► /sandbox/run  (visible preview)
+        │                └───────────► /sandbox/run  (hidden tester: automatic tests)
+        ├── POST /api/pip            → lib/pip.js → PII filter → Claude (if key) or practice mode
+        ├── POST /api/studio/check   → lib/game-check.js (same explainable record as other checks)
+        └── localStorage             → projects, versions, chat, test plans (nothing uploaded)
+```
+
+- **Runner policy:** `sandbox allow-scripts` (also as a CSP header, so it stays sandboxed even if opened directly), `default-src 'none'`, `connect-src 'none'`, `form-action 'none'`. User code can draw and talk to the Studio, nothing else.
+- **Loop guard:** every `for`/`while`/`do` body gets a check (line numbers unchanged). A loop that blocks for 1.5s is stopped with an error pointing at its line, instead of freezing the page.
+- **Authorship:** a line diff after every change records who wrote each line (starter, Pip, you), shown in the editor and kept with every version.
+- **Pip's contract:** Claude returns JSON `{reply, code, summary, explain[], testIdeas[]}`; the server validates it and falls back to practice mode on any failure.
+- **Before real users:** serve the runner from a separate domain (e.g. `playtinker-games.net`) so user code never shares a site with accounts.
+
 ## The check record (the key design decision)
 
 Both demo endpoints return the same shape that Claude will return in production:
@@ -56,7 +72,7 @@ Review is recommended automatically when: any answer is too short to judge confi
 1. **AI gateway:** add `lib/ai-gateway.js`, which calls the Claude API server-side with `ANTHROPIC_API_KEY` stored as a Fly secret (`fly secrets set ANTHROPIC_API_KEY=...`). Ask Claude for JSON matching the schema above, then validate it. Keep the rule-based checker as a fallback.
 2. **PII filter before every AI call** (already exists in `lib/checks.js` as `piiFindings`). Extend it.
 3. **Accounts:** parent-created child accounts (managed auth plus Fly Postgres), so public sharing approval can be real.
-4. **Creator Studio:** CodeMirror editor, Pip chat, sandboxed preview on a **separate domain** for user-generated games, and version history.
+4. **Creator Studio:** first version done (v0.2). Next: move the runner to a **separate domain**, store projects and versions server-side with accounts, and send projects straight to GitHub with parent permission.
 5. **Moderation queue** for games that a parent has approved for public view.
 6. **Privacy:** DPIA, UK GDPR and ICO Children's Code review, and legal and safeguarding advice before any real user data.
 
